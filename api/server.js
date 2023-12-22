@@ -13,7 +13,9 @@ app.get("/", (req, res) => {
     res.json({ message: "Node js cool" });
 });
 
-app.use("/api/", require("./routes/vans"))
+app.use("/api/", require("./routes/vansRoute"))
+
+app.use("/api/", require("./routes/userRoute"))
 
 app.listen(3000, () => {
     console.log("Listening to port 3000");
