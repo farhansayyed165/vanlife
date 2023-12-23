@@ -2,13 +2,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const errorHandler = require("./middleware/errorHandler")
+const validateToken = require("./middleware/validateToken")
 const { pool } = require("./queries");
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
 
+app.use(errorHandler);
 app.get("/", (req, res) => {
     res.json({ message: "Node js cool" });
 });

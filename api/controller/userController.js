@@ -1,15 +1,48 @@
 const asyncHandler = require("express-async-handler")
-const {pool} = require("../queries")
-
+const { pool } = require("../queries")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 /*
 asyncHandler(async(req,res)=>{
     
 })
 */
-const getUser = asyncHandler(async(req,res)=>{
-    const {column, value} = req.query
+const runFunc = (str, res) => {
+    pool.query(str, (error, result) => {
+        if (error) {
+            res.status(400)
+            throw new Error(error)
+        }
+        res.json(result).status(200)
+    })
+}
+const createUser = asyncHandler(async (req, res) => {
+    let { name, email, password, avatar, about, gender } = req.body
+    if (!name || !email || !password || !gender) {
+        res.status(400);
+        throw new Error("fields: name, email, password, and gender  are mandatory")
+    }
+    // if(!avatar){
+    //     avatar = 'DEFAULT'
+    // }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // let str = `INSERT INTO users(name, email, password avatar, about, gender) VALUES ($1,$2,$3,$4,$5,$6)`
+    const client = await pool.connect();
+    try {
+        const result = await client.query("INSERT INTO users VALUES (DEFAULT,$1,$2,$3,$4,$5,$6) RETURNING *", [name, email, hashedPassword, avatar, about, gender])
+        res.json(result.rows).status(200)
+    } catch (error) {
+        throw new Error(error)
+    }
+    // const result = await pool.query(str,[name, email, hashedPassword, "DEFAULT", about, gender])
+
+})
+
+
+const getUser = asyncHandler(async (req, res) => {
+    const { column, value } = req.query
     // console.log(req.params)
-    if(!column || !value){
+    if (!column || !value) {
         res.status(400)
         throw new Error(`"value" or "column" parameter required for the request is empty`)
     }
@@ -19,12 +52,12 @@ const getUser = asyncHandler(async(req,res)=>{
             console.log(error)
         }
         res.json(result.rows).status(200)
-    })  
+    })
 })
 
 
-const updateUser = asyncHandler(async(req,res)=>{
-    const {id, columns, values} = req.body;
+const updateUser = asyncHandler(async (req, res) => {
+    const { id, columns, values } = req.body;
     let str = "UPDATE users SET";
     for (let index = 0; index < columns.length; index++) {
         const column = columns[index];
@@ -32,29 +65,66 @@ const updateUser = asyncHandler(async(req,res)=>{
         let tempStr = ` ${column} = '${value}'`
         str = str + tempStr
     }
-    str = str + ` WHERE userid = ${id}`
+    str = str + ` WHERE userid = ${id} RETURNING *`
     pool.query(str, (error, result) => {
         if (error) {
             console.log(error)
         }
         res.json(result.rows).status(200)
-    }) 
-    
-})
-
-
-const loginUser = asyncHandler(async(req,res)=>{
-    
-})
-
-const createUser = asyncHandler(async(req,res)=>{
+    })
 
 })
 
 
 
-const deleteUser = asyncHandler(async(req,res)=>{
-    
+const loginUser = asyncHandler(async (req, res) => {
+    const {email, password} = req.body;
+    if(!email||!password){
+        res.status(400);
+        throw new Error("fields: email, password are mandatory")
+    }
+    const client = await pool.connect();
+    let user;
+    try {
+        user = await client.query(`SELECT * FROM users WHERE email = '${email}'`) 
+    } catch (error) {
+        throw new Error("user not found")
+    }
+    console.log(user)
+    if(bcrypt.compare(password, user.rows[0].password)){
+        const accessToken = jwt.sign({
+            user:user.rows[0]
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "10d" })
+
+        res.json({accessToken, user:user.rows[0]}).status(200)
+    }
+    else{
+        res.status(401);
+        throw new Error("email or password is not valid");
+    }
+    client.release()
+
 })
 
-module.exports = {getUser,loginUser,createUser,deleteUser,updateUser}
+
+
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const { id } = req.body
+    if(!id){
+        res.status(400)
+        throw new Error("ID not provided");
+    }
+    const client = await pool.connect();
+    try {
+        const user = await client.query("DELETE FROM users WHERE userid=$1  RETURNING *",[id])
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(500)
+        throw new Error("SOMETHING WENT WRONG");
+    }
+})  
+
+module.exports = { getUser, loginUser, createUser, deleteUser, updateUser }

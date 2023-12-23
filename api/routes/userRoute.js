@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router();
+const validateToken = require("../middleware/validateToken")
 const {
     getUser, 
     loginUser, 
@@ -9,6 +10,12 @@ const {
 
 router.get("/getUser", getUser);
 
-router.put("/updateUser", updateUser)
+router.put("/updateUser", validateToken, updateUser);  
+
+router.post("/createUser", createUser);
+
+router.post("/loginUser", loginUser);
+
+router.delete("/deleteUser", validateToken, deleteUser);
 
 module.exports = router;
