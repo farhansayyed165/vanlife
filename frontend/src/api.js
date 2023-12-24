@@ -1,3 +1,5 @@
+import { BaseUrl } from "./constants"
+
 export async function getVans(id) {
     const url = id ? `/api/vans/${id}` : "/api/vans"
     const res = await fetch(url)
@@ -26,19 +28,26 @@ export async function getHostVans(id) {
     return data.vans
 }
 
-export async function loginUser(creds) {
-    const res = await fetch("/api/login",
-        { method: "post", body: JSON.stringify(creds) }
-    )
-    const data = await res.json()
+// export async function loginUser(creds) {
+//     const res = await fetch("http://localhost:3000/api/loginUser",
+//         { method: "post", body: JSON.stringify(creds) }
+//     )
+//     return data
+// }
 
-    if (!res.ok) {
-        throw {
-            message: data.message,
-            statusText: res.statusText,
-            status: res.status
-        }
-    }
+export async function loginUser(data) {
+    const response = await fetch(`${BaseUrl}/api/loginUser`, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON.stringify(data),
+    });
+    return response.json();
 
-    return data
 }

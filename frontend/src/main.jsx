@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { CookiesProvider } from "react-cookie";
+import { createContext } from "react";
 import {
   RouterProvider,
   createBrowserRouter,
@@ -14,29 +16,30 @@ import VanDetail, { loader as vanDetailLoader } from "./pages/Vans/VanDetail"
 import Dashboard, { loader as dashboardLoader } from "./pages/Host/Dashboard"
 import Income from "./pages/Host/Income"
 import Reviews from "./pages/Host/Reviews"
-import HostVans, { loader as hostVansLoader} from "./pages/Host/HostVans"
+import HostVans, { loader as hostVansLoader } from "./pages/Host/HostVans"
 import HostVanDetail, { loader as hostVanDetailLoader } from "./pages/Host/HostVanDetail"
 import HostVanInfo from "./pages/Host/HostVanInfo"
 import HostVanPricing from "./pages/Host/HostVanPricing"
 import HostVanPhotos from "./pages/Host/HostVanPhotos"
 import NotFound from "./pages/NotFound"
-import Login, { loader as loginLoader, action as loginAction } from "./pages/Login"
+import Login from "./pages/LoginPage"
 import Layout from "./components/Layout"
 import HostLayout from "./components/HostLayout"
 import Error from "./components/Error"
 import { requireAuth } from "./utils"
 import "./index.css"
-import "../server"
+// import "../server"
+
+export const UserContext = createContext()
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path="/" element={<Layout />}>
     <Route index element={<Home />} />
-    <Route path="about" element={<About />} title="About Page"/>
+    <Route path="about" element={<About />} title="About Page" />
     <Route
       path="login"
       element={<Login />}
-      loader={loginLoader}
-      action={loginAction}
+  
     />
     <Route
       path="vans"
@@ -44,9 +47,9 @@ const router = createBrowserRouter(createRoutesFromElements(
       errorElement={<Error />}
       loader={vansLoader}
     />
-    <Route 
-      path="vans/:id" 
-      element={<VanDetail />} 
+    <Route
+      path="vans/:id"
+      element={<VanDetail />}
       errorElement={<Error />}
       loader={vanDetailLoader}
     />
@@ -60,12 +63,12 @@ const router = createBrowserRouter(createRoutesFromElements(
       <Route
         path="income"
         element={<Income />}
-        // loader={async ({ request }) => {const auth = await requireAuth(request); return auth}}
+      // loader={async ({ request }) => {const auth = await requireAuth(request); return auth}}
       />
       <Route
         path="reviews"
         element={<Reviews />}
-        // loader={async ({ request }) => {const auth = await requireAuth(request); return auth}}
+      // loader={async ({ request }) => {const auth = await requireAuth(request); return auth}}
       />
       <Route
         path="vans"
@@ -82,17 +85,17 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route
           index
           element={<HostVanInfo />}
-          // loader={async ({ request }) => await requireAuth(request)}
+        // loader={async ({ request }) => await requireAuth(request)}
         />
         <Route
           path="pricing"
           element={<HostVanPricing />}
-          // loader={async ({ request }) => await requireAuth(request)}
+        // loader={async ({ request }) => await requireAuth(request)}
         />
         <Route
           path="photos"
           element={<HostVanPhotos />}
-          // loader={async ({ request }) => await requireAuth(request)}
+        // loader={async ({ request }) => await requireAuth(request)}
         />
       </Route>
     </Route>
@@ -101,11 +104,16 @@ const router = createBrowserRouter(createRoutesFromElements(
 ))
 
 function App() {
+
   return (
-    <RouterProvider router={router} />
+    <CookiesProvider>
+        <RouterProvider router={router} />
+      </CookiesProvider>
   )
 }
+// <UserContext.Provider value={{name:"",email:"", avatar:"", about:""}}>
 
+  {/* </UserContext.Provider> */}
 ReactDOM
   .createRoot(document.getElementById('root'))
   .render(<App />);

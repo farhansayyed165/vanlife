@@ -90,18 +90,20 @@ const loginUser = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new Error("user not found")
     }
-    console.log(user)
-    if(bcrypt.compare(password, user.rows[0].password)){
+    // console.log(user)
+    if(await bcrypt.compare(password, user.rows[0].password)){
+        console.log(bcrypt.compare(password, user.rows[0].password))
         const accessToken = jwt.sign({
             user:user.rows[0]
         },
         process.env.JWT_SECRET,
         { expiresIn: "10d" })
-
+        let userObj = user.rows[0]
+        userObj.password = undefined
         res.json({accessToken, user:user.rows[0]}).status(200)
     }
     else{
-        res.status(401);
+        res.status(401).json({error:"email or password not valid"});
         throw new Error("email or password is not valid");
     }
     client.release()
