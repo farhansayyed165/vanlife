@@ -6,9 +6,12 @@ const {
     loginUser, 
     deleteUser, 
     updateUser, 
-    createUser} = require("../controller/userController")
+    createUser,
+    logoutUser} = require("../controller/userController")
 
 router.get("/getUser", getUser);
+
+router.get("/logoutUser", logoutUser);
 
 router.put("/updateUser", validateToken, updateUser);  
 

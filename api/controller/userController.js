@@ -94,13 +94,22 @@ const loginUser = asyncHandler(async (req, res) => {
     if(await bcrypt.compare(password, user.rows[0].password)){
         console.log(bcrypt.compare(password, user.rows[0].password))
         const accessToken = jwt.sign({
-            user:user.rows[0]
+            user:user.rows[0].name,
+            email:user.rows[0].email
         },
-        process.env.JWT_SECRET,
-        { expiresIn: "10d" })
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "30s" })
+
+        const refreshToken = jwt.sign({
+            user:user.rows[0].name,
+            email:user.rows[0].email
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "1d" })
+        res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:2*24*60*60*1000})
         let userObj = user.rows[0]
         userObj.password = undefined
-        res.json({accessToken, user:user.rows[0]}).status(200)
+        res.json({name:userObj.name, accessToken}).status(200)
     }
     else{
         res.status(401).json({error:"email or password not valid"});
@@ -110,6 +119,19 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
+
+const logoutUser = asyncHandler(async(req,res)=>{
+    const cookies = req.cookies
+    if(!cookies?.jwt){
+        res.sendStatus(401);
+        throw new Error("no cookies available")
+    }
+    // console.log(cookies) 
+    const refreshToken = cookies.jwt
+
+    res.clearCookie('jwt',{httpOnly:true, secure:true})
+    res.json({message:"Logged out successfully"})
+})
 
 
 
@@ -129,4 +151,4 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 })  
 
-module.exports = { getUser, loginUser, createUser, deleteUser, updateUser }
+module.exports = { getUser, loginUser, createUser, deleteUser, updateUser, logoutUser }

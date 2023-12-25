@@ -5,9 +5,12 @@ const app = express();
 const errorHandler = require("./middleware/errorHandler")
 const validateToken = require("./middleware/validateToken")
 const { pool } = require("./queries");
+const cookieParser = require('cookie-parser')
 
 
 app.use(bodyParser.json());
+
+app.use(cookieParser())
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -32,6 +35,8 @@ app.get("/", (req, res) => {
 app.use("/api/", require("./routes/vansRoute"))
 
 app.use("/api/", require("./routes/userRoute"))
+
+app.get("/api/refresh", require("./controller/refreshTokenController"))
 
 app.listen(3000, () => {
     console.log("Listening to port 3000");
