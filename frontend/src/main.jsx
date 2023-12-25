@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { CookiesProvider } from "react-cookie";
+import AuthProvider from './context/AuthProvider';
 import { createContext } from "react";
 import {
   RouterProvider,
@@ -39,7 +40,7 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route
       path="login"
       element={<Login />}
-  
+
     />
     <Route
       path="vans"
@@ -107,13 +108,15 @@ function App() {
 
   return (
     <CookiesProvider>
+      <AuthProvider>
         <RouterProvider router={router} />
-      </CookiesProvider>
+      </AuthProvider>
+    </CookiesProvider>
   )
 }
 // <UserContext.Provider value={{name:"",email:"", avatar:"", about:""}}>
 
-  {/* </UserContext.Provider> */}
+{/* </UserContext.Provider> */ }
 ReactDOM
   .createRoot(document.getElementById('root'))
   .render(<App />);

@@ -6,21 +6,25 @@ const errorHandler = require("./middleware/errorHandler")
 const validateToken = require("./middleware/validateToken")
 const { pool } = require("./queries");
 const cookieParser = require('cookie-parser')
+// const cors = require('cors')
+const corsOptions = require("./config/corsOptions")
 
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+// app.use(cors(corsOptions));
 
 app.use(cookieParser())
 
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Origin,X-Requested-With, Content-Type, Accept, Authorization"
-    );
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
-    next();
-});
+var cors = require('cors');
+app.use(cors());
+app.options('*',cors());
+var allowCrossDomain = function(req,res,next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();  
+}
+app.use(allowCrossDomain);
 
 
 app.use(bodyParser.urlencoded({

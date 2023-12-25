@@ -1,20 +1,20 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigation } from 'react-router-dom'
 import { loginUser } from '../api'
+import { AuthContext } from '../context/AuthProvider'
 
 function Login() {
+    const { setAuth } = useContext(AuthContext)
     const navigation = useNavigation()
     const [errorMessage, setErrorMessage] = useState()
     const [formData, setFormData] = useState({ email: "", password: "" })
     async function handleSubmit(e) {
         e.preventDefault()
-        if (!formData.email || !formData.password) {
-            setErrorMessage("Email and Password are required")
-            return
-        }
         const res = await loginUser(formData)
         console.log(res)
     }
+
+    console.log(formData);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -36,12 +36,14 @@ function Login() {
                     type="email"
                     placeholder="Email address"
                     onChange={handleChange}
+                    required
                 />
                 <input
                     name="password"
                     type="password"
                     placeholder="Password"
                     onChange={handleChange}
+                    required
                 />
                 <button
                     disabled={navigation.state === "submitting"}

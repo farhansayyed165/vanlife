@@ -1,4 +1,5 @@
 import { BaseUrl } from "./constants"
+import axios from "./axios"
 
 export async function getVans(id) {
     const url = id ? `/api/vans/${id}` : "/api/vans"
@@ -36,18 +37,10 @@ export async function getHostVans(id) {
 // }
 
 export async function loginUser(data) {
-    const response = await fetch(`${BaseUrl}/api/loginUser`, {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        body: JSON.stringify(data),
-    });
+    const response = await axios.post(`/api/loginUser`, JSON.stringify(data),{
+        headers:{"Content-Type":"application/json"},
+        // withCredentials:true,
+    })
     return response.json();
 
 }

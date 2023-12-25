@@ -91,7 +91,13 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new Error("user not found")
     }
     // console.log(user)
-    if(await bcrypt.compare(password, user.rows[0].password)){
+    let condition
+    try {
+        condition = await bcrypt.compare(password, user.rows[0]?.password)
+    } catch (error) {
+        res.sendStatus(500)
+    }
+    if(condition){
         console.log(bcrypt.compare(password, user.rows[0].password))
         const accessToken = jwt.sign({
             user:user.rows[0].name,
