@@ -78,18 +78,24 @@ const updateUser = asyncHandler(async (req, res) => {
 
 
 const loginUser = asyncHandler(async (req, res) => {
-    const {email, password} = req.body;
-    if(!email||!password){
+    // console.log(req.body)
+    const { email, password } = req.body;
+    if (!email || !password) {
         res.status(400);
         throw new Error("fields: email, password are mandatory")
     }
     const client = await pool.connect();
     let user;
-    try {
-        user = await client.query(`SELECT * FROM users WHERE email = '${email}'`) 
-    } catch (error) {
-        throw new Error("user not found")
+
+    user = await client.query(`SELECT * FROM users WHERE email = '${email}'`)
+    client.release()
+
+    if(user.rowCount == 0){
+        res.status(401).json({ error: `cannot find account with email:  "${email}"` })
+        throw new Error("User not found")
     }
+
+
     // console.log(user)
     let condition
     try {
@@ -97,64 +103,64 @@ const loginUser = asyncHandler(async (req, res) => {
     } catch (error) {
         res.sendStatus(500)
     }
-    if(condition){
+    if (condition) {
         console.log(bcrypt.compare(password, user.rows[0].password))
         const accessToken = jwt.sign({
-            user:user.rows[0].name,
-            email:user.rows[0].email
+            user: user.rows[0].name,
+            email: user.rows[0].email
         },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30s" })
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "30s" })
 
         const refreshToken = jwt.sign({
-            user:user.rows[0].name,
-            email:user.rows[0].email
+            user: user.rows[0].name,
+            email: user.rows[0].email
         },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "1d" })
-        res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:2*24*60*60*1000})
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "1d" })
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 2 * 24 * 60 * 60 * 1000 })
         let userObj = user.rows[0]
         userObj.password = undefined
-        res.json({name:userObj.name, accessToken}).status(200)
+        res.json({ name: userObj.name, accessToken }).status(200)
     }
-    else{
-        res.status(401).json({error:"email or password not valid"});
+    else {
+        res.status(401).json({ error: `email or password not valid` })
+        // res.json({ error: "email or password not valid" }).status(401);
         throw new Error("email or password is not valid");
     }
-    client.release()
 
 })
 
 
-const logoutUser = asyncHandler(async(req,res)=>{
+const logoutUser = asyncHandler(async (req, res) => {
     const cookies = req.cookies
-    if(!cookies?.jwt){
+    if (!cookies?.jwt) {
         res.sendStatus(401);
         throw new Error("no cookies available")
     }
     // console.log(cookies) 
     const refreshToken = cookies.jwt
 
-    res.clearCookie('jwt',{httpOnly:true, secure:true})
-    res.json({message:"Logged out successfully"})
+    res.clearCookie('jwt', { httpOnly: true, secure: true })
+    res.json({ message: "Logged out successfully" })
 })
 
 
 
 const deleteUser = asyncHandler(async (req, res) => {
     const { id } = req.body
-    if(!id){
+    if (!id) {
         res.status(400)
         throw new Error("ID not provided");
     }
     const client = await pool.connect();
     try {
-        const user = await client.query("DELETE FROM users WHERE userid=$1  RETURNING *",[id])
+        const user = await client.query("DELETE FROM users WHERE userid=$1  RETURNING *", [id])
         res.status(200).json(user)
     } catch (error) {
         res.status(500)
         throw new Error("SOMETHING WENT WRONG");
     }
-})  
+})
 
 module.exports = { getUser, loginUser, createUser, deleteUser, updateUser, logoutUser }

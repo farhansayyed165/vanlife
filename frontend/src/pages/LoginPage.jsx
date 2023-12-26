@@ -1,20 +1,42 @@
 import React, { useContext, useState } from 'react'
-import { useNavigation } from 'react-router-dom'
+import { json, useNavigate, useLocation } from 'react-router-dom'
 import { loginUser } from '../api'
-import { AuthContext } from '../context/AuthProvider'
+// import { AuthContext } from '../context/AuthProvider'
+import useAuth from '../hooks/useAuth';
+
 
 function Login() {
-    const { setAuth } = useContext(AuthContext)
-    const navigation = useNavigation()
-    const [errorMessage, setErrorMessage] = useState()
-    const [formData, setFormData] = useState({ email: "", password: "" })
+    const { auth, setAuth } = useAuth();
+    const location = useLocation();
+
+    const navigate = useNavigate();
+    const [buttonState, setButtonState] = useState("Login")
+    const [errorMessage, setErrorMessage] = useState("");
+    const [formData, setFormData] = useState({ email: "", password: "" });
     async function handleSubmit(e) {
         e.preventDefault()
-        const res = await loginUser(formData)
-        console.log(res)
-    }
+        setButtonState("Submitting")
 
-    console.log(formData);
+        loginUser(formData)
+            .then(res => {
+                if(res.error){
+                    setButtonState("Login")
+                    setErrorMessage(res.message)
+                    return
+                }
+                setAuth({ user: res.name, accessToken: res.accessToken })
+                if (location.state?.from?.pathname) {
+                    navigate(location.state.from.pathname)
+                }
+                else {
+                    navigate("/")
+                }
+            })
+            .catch(error => {
+            console.log(error)
+            })
+
+    }
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -28,7 +50,9 @@ function Login() {
         <div className="login-container">
             <h1>Sign in to your account</h1>
             {/* {message && <h3 className="red">{message}</h3>} */}
-            {errorMessage && <h3 className="red">{errorMessage}</h3>}
+
+            {location?.state?.message && <h2 className="red">{location?.state?.message}</h2>}
+            <h3 className="red" style={{fontWeight:"600"}}>{errorMessage}</h3>
 
             <form onSubmit={handleSubmit} className="login-form">
                 <input
@@ -46,12 +70,9 @@ function Login() {
                     required
                 />
                 <button
-                    disabled={navigation.state === "submitting"}
+                    className={buttonState}
                 >
-                    {navigation.state === "submitting"
-                        ? "Logging in..."
-                        : "Log in"
-                    }
+                    {buttonState == "Submitting" ? "Submitting..." : (buttonState == "Error" ? "Try Again" : buttonState)}
                 </button>
             </form>
         </div>
