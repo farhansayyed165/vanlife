@@ -25,6 +25,7 @@ import HostVanPricing from "./pages/Host/HostVanPricing"
 import HostVanPhotos from "./pages/Host/HostVanPhotos"
 import NotFound from "./pages/NotFound"
 import Login from "./pages/LoginPage"
+import Signup from './pages/Signup';
 import Layout from "./components/Layout"
 import HostLayout from "./components/HostLayout"
 import Error from "./components/Error"
@@ -42,6 +43,10 @@ const router = createBrowserRouter(createRoutesFromElements(
       path="login"
       element={<Login />}
 
+    />
+    <Route
+    path='signup'
+    element={<Signup/>}
     />
     <Route
       path="vans"

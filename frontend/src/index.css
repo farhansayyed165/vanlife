@@ -202,6 +202,75 @@ footer {
 } */
 
 
+/* *** SIGNUP PAGE **** */
+h3{
+    font-family: "Karla",sans-serif ;
+    font-weight: 600;
+}
+.signup-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+}
+
+
+.signup-element{
+    width: 40%;
+    margin-block: 0.5rem;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #9c9c9c;
+    resize: none;
+}
+
+@media only screen and (max-width:800px) {
+    .signup-element{
+        width: 90%;
+        margin-inline: 10px;
+    }
+    .signup-select{
+        width: 90%;
+    }
+}
+
+.avatar{
+    width: 120px;
+    border-radius: 9999px;
+}
+
+.avatar-icon{
+    position: absolute;
+    
+    transform: translateY(3vw);
+    bottom: 0;
+}
+
+.avatar-text{
+    opacity: 0.7;
+    transition: all 300ms;
+}
+.avatar:hover>.avatar-text {
+    opacity: 1;
+}
+.avatar:hover:after {
+    opacity: 1;
+}
+.avatar:after {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 9999px;
+    top:0;
+    background:rgba(0,0,0,0.5);
+    opacity: 0.1;
+    transition: all 300ms;
+    -webkit-transition: all 300ms;
+}
+
+
 /*** ABOUT PAGE ***/
 .about-hero-image {
     /* max-width: 100%; */

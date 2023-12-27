@@ -5,6 +5,7 @@ const errorHandler = require("./middleware/errorHandler")
 const validateToken = require("./middleware/validateToken")
 const { pool } = require("./queries");
 const cookieParser = require('cookie-parser')
+const {generateUploadUrl }= require("./config/aws")
 
 const cors = require("cors");
 
@@ -29,9 +30,15 @@ app.get("/", (req, res) => {
     res.json({ message: "Node js cool" });
 });
 
+
 app.use("/api/", require("./routes/vansRoute"))
 
 app.use("/api/", require("./routes/userRoute"))
+
+app.get("/api/getUrl", async (req, res)=>{
+    const url = await generateUploadUrl()
+    res.send({url})
+})
 
 app.get("/api/refresh", require("./controller/refreshTokenController"))
 
