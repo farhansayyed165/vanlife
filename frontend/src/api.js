@@ -1,6 +1,8 @@
 import { BaseUrl } from "./constants"
 import axios from "axios"
 
+const BASEURL = "http://localhost:3000"
+
 export async function getVans(id) {
     const url = id ? `/api/vans/${id}` : "/api/vans"
     const res = await fetch(url)
@@ -29,18 +31,27 @@ export async function getHostVans(id) {
     return data.vans
 }
 
-// export async function loginUser(creds) {
-//     const res = await fetch("http://localhost:3000/api/loginUser",
-//         { method: "post", body: JSON.stringify(creds) }
-//     )
-//     return data
-// }
 
 export async function loginUser(data) {
     try {
-        const response = await axios.post(`http://localhost:3000/api/loginUser`, data, {
+        const response = await axios.post(`${BASEURL}/api/loginUser`, data, {
             headers: { "Content-Type": "application/json" },
             withCredentials:true,
+        })
+        return response.data;
+    } catch (error) {
+        const err = {message:error.response.data?.error, error:true}
+        // console.log(error.response.data.error)
+        return err
+    }
+
+}
+
+
+export async function createUser(formData) {
+    try {
+        const response = await axios.post(`${BASEURL}/api/createUser`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },  
         })
         return response.data;
     } catch (error) {

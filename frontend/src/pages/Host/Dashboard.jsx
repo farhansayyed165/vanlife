@@ -3,26 +3,28 @@ import { Link, defer, Await, useLoaderData } from "react-router-dom"
 import { getHostVans } from "../../api"
 import { requireAuth } from "../../utils"
 import { BsStarFill } from "react-icons/bs"
+import useRefreshToken from "../../hooks/useRefreshToken"
+import useAxiosPrivate from "../../hooks/useAxiosPrivate"
 
 export async function loader({ request }) {
-    // await requireAuth(request)
-    return defer({ vans: getHostVans() })
+
+    return "yes"
 }
 
 export default function Dashboard() {
     const loaderData = useLoaderData()
-
+    const refresh = useRefreshToken()
     function renderVanElements(vans) {
         const hostVansEls = vans.map((van) => (
-                    <Link to={`vans/${van.id}`}>
-            <div className="host-van-single" key={van.id}>
-                <img src={van.imageUrl} alt={`Photo of ${van.name}`} />
-                <div className="host-van-info">
-                    <h3>{van.name}</h3>
-                    <p>${van.price}/day</p>
+            <Link to={`vans/${van.id}`}>
+                <div className="host-van-single" key={van.id}>
+                    <img src={van.imageUrl} alt={`Photo of ${van.name}`} />
+                    <div className="host-van-info">
+                        <h3>{van.name}</h3>
+                        <p>${van.price}/day</p>
+                    </div>
                 </div>
-            </div>
-                    </Link>
+            </Link>
         ))
 
         return (
@@ -56,7 +58,7 @@ export default function Dashboard() {
                     <Link to="vans">View all</Link>
                 </div>
                 <React.Suspense fallback={<h3>Loading...</h3>}>
-                    <Await resolve={loaderData.vans}>{renderVanElements}</Await>
+                    {/* <Await resolve={loaderData.vans}>{renderVanElements}</Await> */}
                 </React.Suspense>
             </section>
         </>

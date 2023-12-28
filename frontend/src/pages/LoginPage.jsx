@@ -11,7 +11,8 @@ function Login() {
 
     const navigate = useNavigate();
     const [buttonState, setButtonState] = useState("Login")
-    const [errorMessage, setErrorMessage] = useState("");
+    const message = location.state?.message
+    const [errorMessage, setErrorMessage] = useState();
     const [formData, setFormData] = useState({ email: "", password: "" });
     async function handleSubmit(e) {
         e.preventDefault()
@@ -49,9 +50,9 @@ function Login() {
     return (
         <div className="login-container">
             <h1>Sign in to your account</h1>
-            {/* {message && <h3 className="red">{message}</h3>} */}
+            {/* {message && <h3 className="text-green-800">{message}</h3>} */}
 
-            {location?.state?.message && <h2 className="red">{location?.state?.message}</h2>}
+            {location?.state?.message && <h3 className="text-green-800">{location?.state?.message}</h3>}
             <h3 className="red" style={{fontWeight:"600"}}>{errorMessage}</h3>
 
             <form onSubmit={handleSubmit} className="login-form">

@@ -26,9 +26,9 @@ function EditAvatar({ data, avatar, setAvatar, dimensions }) {
         <>
             <div className='avatar cursor-pointer w-[120px]' onClick={handleAvatarModal}>
                 <img src={avatarLink} className={`${dimensions ? `w-[${dimensions}] h-[${dimensions}]` : "w-[120px] h-[120px]"} rounded-full shadow-md object-cover mb-0`} alt="" />
-                {/* <span className='absolute top-0  text-white z-10 avatar-text w=[120px] h-[120px] flex items-center'>
-                    <p className=' w-[120px] avatar-icon text-pClamp flex justify-center'><TbHandClick size={30} color='black' /></p>
-                </span> */}
+                <span className='absolute top-0 text-center text-white z-10 avatar-text w=[120px] h-[120px] flex items-center'>
+                    <p className=' w-[120px] text-pClamp '>Change Image</p>
+                </span>
             </div>
             <input type="file" className='sr-only ' onChange={handleAvatarChange} ref={inputFeild} />
         </>

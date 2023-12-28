@@ -1,4 +1,7 @@
 const express = require("express")
+const multer = require("multer")
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 const router = express.Router();
 const validateToken = require("../middleware/validateToken")
 const {
@@ -11,11 +14,15 @@ const {
 
 router.get("/getUser", getUser);
 
+router.get("/getVans", validateToken,(req,res)=>{
+    res.send("yes")
+});
+
 router.get("/logoutUser", logoutUser);
 
 router.put("/updateUser", validateToken, updateUser);  
 
-router.post("/createUser", createUser);
+router.post("/createUser",upload.single("image"), createUser);
 
 router.post("/loginUser", loginUser);
 

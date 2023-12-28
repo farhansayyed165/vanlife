@@ -5,7 +5,10 @@ const errorHandler = require("./middleware/errorHandler")
 const validateToken = require("./middleware/validateToken")
 const { pool } = require("./queries");
 const cookieParser = require('cookie-parser')
-const {generateUploadUrl }= require("./config/aws")
+const multer = require("multer")
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+const {getImageUrl} = require("./config/awsConfig")
 
 const cors = require("cors");
 
@@ -30,6 +33,11 @@ app.get("/", (req, res) => {
     res.json({ message: "Node js cool" });
 });
 
+app.get("/file",upload.single("image"), async (req, res)=>{
+    console.log(req.body)
+    console.log(req.file)
+    res.send(req.body)
+})
 
 app.use("/api/", require("./routes/vansRoute"))
 

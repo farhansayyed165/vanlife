@@ -60,7 +60,7 @@ const router = createBrowserRouter(createRoutesFromElements(
       errorElement={<Error />}
       loader={vanDetailLoader}
     />
-    <Route element={<RequireAuth />}>
+    {/* <Route element={<RequireAuth />}> */}
       <Route path="host" element={<HostLayout />}>
         <Route
           index
@@ -106,7 +106,7 @@ const router = createBrowserRouter(createRoutesFromElements(
           />
         </Route>
       </Route>
-    </Route>
+    {/* </Route> */}
     <Route path="*" element={<NotFound />} />
   </Route>
 ))

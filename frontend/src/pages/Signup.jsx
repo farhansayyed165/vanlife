@@ -1,29 +1,54 @@
 import React from 'react'
 import { useState } from 'react'
 import EditAvatar from '../components/user/editAvatar';
+import { createUser } from "../api"
+import {useNavigate} from "react-router-dom"
 
 
 function Signup() {
   const [data, setData] = useState({})
   const [avatar, setAvatar] = useState()
+  const [error, setError] = useState() 
+  const navigate = useNavigate()
   function handleChange(e) {
     const { name, value } = e.target;
     setData(prev => ({
       ...prev,
       [name]: value
     }))
+  }
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if(!avatar){
+      setAvatar("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png")
+    }
+    const form = new FormData()
+    form.append("image", avatar)
+    form.append("email", data.email)
+    form.append("name", data.name)
+    form.append("password", data.password)
+    form.append("about", data.about)
+    form.append("gender", data.gender)
 
+    const response = await createUser(form)
+    if(response.error){
+      setError(response.message)
+      return
+    }
+    navigate("/login", {state:{message:"Login with your email and password"}})
   }
   return (
     <>
       <main className='flex flex-col items-center'>
-        <h3 className=' text-lg'>Signup for VANLIFE</h3>
-        <form className='signup-form'>
-          <div className='relative my-3'>
+        <h3 className=' text-xl'>Signup for VANLIFE</h3>
+        <form className='signup-form' onSubmit={handleSubmit}>
+        <h3 className='text-lg text-red-500'>{error}</h3>
+          <div className='relative my-3 flex flex-col items-center'>
             <EditAvatar avatar={avatar} setAvatar={setAvatar} />
+            <p className='mt-1'>Click on above image to change/upload your profile image</p>
           </div>
           <input
-          className='signup-element'
+            className='signup-element'
             type="email"
             name="email"
             placeholder='Email'
@@ -32,7 +57,7 @@ function Signup() {
             required />
 
           <input
-          className='signup-element'
+            className='signup-element'
             type="name"
             name="name"
             placeholder='Name'
@@ -41,7 +66,7 @@ function Signup() {
             required />
 
           <input
-          className='signup-element'
+            className='signup-element'
             type="password"
             name="password"
             placeholder='Password'
@@ -50,7 +75,7 @@ function Signup() {
             required />
 
           <textarea
-          className='signup-element'
+            className='signup-element'
             type="text"
             name="about"
             placeholder='About'
@@ -74,6 +99,7 @@ function Signup() {
               <option value="prefer not to answer">Perfer not to Answer</option>
             </select>
           </div>
+          <button type="submit" className='p-2 bg-button-orange rounded signup-element text-white font-semibold text-lg'>Submit</button>
         </form>
       </main>
     </>

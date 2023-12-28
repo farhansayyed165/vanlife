@@ -2,6 +2,10 @@ const asyncHandler = require("express-async-handler")
 const { pool } = require("../queries")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const multer = require("multer")
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+const { getImageUrl } = require("../config/awsConfig")
 /*
 asyncHandler(async(req,res)=>{
     
@@ -17,25 +21,41 @@ const runFunc = (str, res) => {
     })
 }
 const createUser = asyncHandler(async (req, res) => {
-    let { name, email, password, avatar, about, gender } = req.body
+    let { name, email, password, about, gender } = req.body
+    req.file
     if (!name || !email || !password || !gender) {
-        res.status(400);
+        res.status(400).json({ error: "fields: name, email, password, and gender  are mandatory" });
         throw new Error("fields: name, email, password, and gender  are mandatory")
     }
-    // if(!avatar){
-    //     avatar = 'DEFAULT'
-    // }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    // let str = `INSERT INTO users(name, email, password avatar, about, gender) VALUES ($1,$2,$3,$4,$5,$6)`
     const client = await pool.connect();
+    console.log(email)
+    const user = await client.query(`SELECT * FROM users WHERE email = '${email}'`)
+    if (user.rowCount > 0) {
+        res.status(403).json({ error: "Email already exists" })
+        client.release()
+        throw new Error("Email already exists")
+    }
+    let imageUrl;
+    if (req.file) {
+        imageUrl = await getImageUrl(req)
+    }
+    else {
+        imageUrl = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png'
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     try {
-        const result = await client.query("INSERT INTO users VALUES (DEFAULT,$1,$2,$3,$4,$5,$6) RETURNING *", [name, email, hashedPassword, avatar, about, gender])
-        res.json(result.rows).status(200)
+        const result = await client.query("INSERT INTO users VALUES (DEFAULT,$1,$2,$3,$4,$5,$6) RETURNING *", [name, email, hashedPassword, imageUrl, about, gender])
+        result.rows[0].password = undefined
+        res.json(result.rows[0]).status(200)
+        client.release()
+
     } catch (error) {
+        client.release()
+
+        res.status(401).json({ error: `Something Went Wrong while connecting to postgres` })
         throw new Error(error)
     }
-    // const result = await pool.query(str,[name, email, hashedPassword, "DEFAULT", about, gender])
-
 })
 
 
@@ -90,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
     user = await client.query(`SELECT * FROM users WHERE email = '${email}'`)
     client.release()
 
-    if(user.rowCount == 0){
+    if (user.rowCount == 0) {
         res.status(401).json({ error: `cannot find account with email:  "${email}"` })
         throw new Error("User not found")
     }
