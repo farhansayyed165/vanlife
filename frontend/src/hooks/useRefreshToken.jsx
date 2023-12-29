@@ -9,11 +9,11 @@ function useRefreshToken() {
         const response = await axios.get(`${BaseUrl}/api/refresh`, {
           withCredentials:true
         })
-        setAuth(prev=>{
-          console.log(prev)
-          console.log(response.accessToken)
-          return {...prev, accessToken:response.accessToken}
-        })
+        // setAuth(prev=>{
+        //   console.log(prev)
+        //   console.log(response.accessToken)
+        //   return {...prev, accessToken:response.accessToken}
+        // })
         return response.accessToken
     }
   return refresh

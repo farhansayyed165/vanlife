@@ -3,6 +3,31 @@ import axios from "axios"
 
 const BASEURL = "http://localhost:3000"
 
+export async function checkToken(token){
+    const url = `${BASEURL}/checkToken`
+    const res = await fetch(url, {
+        method:"GET",
+        headers:{
+            "Content-Type":"application/json",
+            'Authorization': `Bearer ${token}`
+        },
+        credentials:"include",
+
+    })
+    return res.json()
+}
+
+export async function refreshToken(){
+    const response = await fetch(`${BaseUrl}/api/refresh`, {
+        method:"GET",
+        headers:{
+            "Content-Type":"application/json",
+        },
+        credentials:"include",
+      })
+    return response.json()
+}
+
 export async function getVans(id) {
     const url = id ? `/api/vans/${id}` : "/api/vans"
     const res = await fetch(url)
@@ -17,9 +42,30 @@ export async function getVans(id) {
     return data.vans
 }
 
-export async function getHostVans(id) {
-    const url = id ? `/api/host/vans/${id}` : "/api/host/vans"
-    const res = await fetch(`${BaseUrl}${url}`)
+// export async function getHostVans(id) {
+//     const url = id ? `/api/host/vans/${id}` : "/api/host/vans"
+//     const res = await fetch(`${BaseUrl}${url}`)
+//     if (!res.ok) {
+//         throw {
+//             message: "Failed to fetch vans",
+//             statusText: res.statusText,
+//             status: res.status
+//         }
+//     }
+//     const data = await res.json()
+//     return data.vans
+// }
+export async function getHostVans(id, token) {
+    const url = `/api/getVans/`
+    const res = await fetch(`${BaseUrl}${url}`,{
+        method:'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${token}`
+        },
+        
+        credentials:'include'
+    })
     if (!res.ok) {
         throw {
             message: "Failed to fetch vans",

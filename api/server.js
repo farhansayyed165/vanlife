@@ -41,12 +41,13 @@ app.get("/file",upload.single("image"), async (req, res)=>{
 
 app.use("/api/", require("./routes/vansRoute"))
 
-app.use("/api/", require("./routes/userRoute"))
-
-app.get("/api/getUrl", async (req, res)=>{
-    const url = await generateUploadUrl()
-    res.send({url})
+app.get("/checkToken", validateToken, ()=>{
+    const user = req.user
+    console.log(user)
+    res.status(200).json(true)
 })
+
+app.use("/api/", require("./routes/userRoute"))
 
 app.get("/api/refresh", require("./controller/refreshTokenController"))
 

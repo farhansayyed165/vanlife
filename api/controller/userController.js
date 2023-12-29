@@ -130,7 +130,7 @@ const loginUser = asyncHandler(async (req, res) => {
             email: user.rows[0].email
         },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "30s" })
+            { expiresIn: "5m" })
 
         const refreshToken = jwt.sign({
             user: user.rows[0].name,

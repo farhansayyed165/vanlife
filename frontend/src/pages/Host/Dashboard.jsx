@@ -1,19 +1,32 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 import { Link, defer, Await, useLoaderData } from "react-router-dom"
 import { getHostVans } from "../../api"
 import { requireAuth } from "../../utils"
 import { BsStarFill } from "react-icons/bs"
 import useRefreshToken from "../../hooks/useRefreshToken"
 import useAxiosPrivate from "../../hooks/useAxiosPrivate"
+import useAuth from "../../hooks/useAuth"
+// export async function getAndRefresh(){
+//     try {
+//         const res = await getHostVans()
+//         return res.json()
+//     } catch (error) {
+        
+//     }
+// }
 
 export async function loader({ request }) {
-
+    // const res  = getHostVans()
+    // return defer({vans:res})
     return "yes"
 }
 
 export default function Dashboard() {
+    const [data, setData] = useState()
+    const { auth } = useAuth()
     const loaderData = useLoaderData()
-    const refresh = useRefreshToken()
+
+    // const refresh = useRefreshToken()
     function renderVanElements(vans) {
         const hostVansEls = vans.map((van) => (
             <Link to={`vans/${van.id}`}>

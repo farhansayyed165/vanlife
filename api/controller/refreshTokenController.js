@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler")
-// const { pool } = require("../queries")
-const jwt = require("jsonwebtoken")
+const { pool } = require("../queries")
+const jwt = require("jsonwebtoken") 
 
 const refreshToken = asyncHandler(async (req, res) => {
     const cookies = req.cookies
@@ -13,19 +13,18 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded)=>{
         if(err){
-            res.status(401)
+            res.status(401).json("Token not authorized")
             throw new Error("User not Authorized");
         }
-        
+        // console.log("refresh",decoded)
         const accessToken = jwt.sign({
             user:decoded.name,
             email:decoded.email
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "30s" })
-        res.json({accessToken})
-
-         
+        console.log("sending refreshed access token")
+        res.json({accessToken, user:decoded.name})
     })
 });
 
