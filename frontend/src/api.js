@@ -93,6 +93,11 @@ export async function loginUser(data) {
 
 }
 
+export async function logoutUser() {
+
+
+}
+
 
 export async function createUser(formData) {
     try {

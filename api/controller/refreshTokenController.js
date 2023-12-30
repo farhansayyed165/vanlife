@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const refreshToken = asyncHandler(async (req, res) => {
     const cookies = req.cookies
     if(!cookies?.jwt){
-        res.status(401);
+        res.status(401).json({error:"no cookies available"});
         throw new Error("no cookies available")
     }
 
@@ -19,12 +19,13 @@ const refreshToken = asyncHandler(async (req, res) => {
         // console.log("refresh",decoded)
         const accessToken = jwt.sign({
             user:decoded.name,
-            email:decoded.email
+            email:decoded.email,
+            userid:decoded.userid
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30s" })
-        console.log("sending refreshed access token")
-        res.json({accessToken, user:decoded.name})
+        { expiresIn: "5m" })
+        console.log(decoded)
+        res.json({accessToken, user:decoded.user, userid:decoded.userid, email:decoded.email})
     })
 });
 

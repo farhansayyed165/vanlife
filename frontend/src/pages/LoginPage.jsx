@@ -25,7 +25,7 @@ function Login() {
                     setErrorMessage(res.message)
                     return
                 }
-                setAuth({ user: res.name, accessToken: res.accessToken })
+                setAuth({ user: res.name, accessToken: res.accessToken, userid:res.userid, email:res.email })
                 if (location.state?.from?.pathname) {
                     navigate(location.state.from.pathname)
                 }

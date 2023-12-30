@@ -127,25 +127,28 @@ const loginUser = asyncHandler(async (req, res) => {
         console.log(bcrypt.compare(password, user.rows[0].password))
         const accessToken = jwt.sign({
             user: user.rows[0].name,
-            email: user.rows[0].email
+            email: user.rows[0].email,
+            userid: user.rows[0].userid
         },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "5m" })
 
         const refreshToken = jwt.sign({
             user: user.rows[0].name,
-            email: user.rows[0].email
+            email: user.rows[0].email,
+            userid: user.rows[0].userid
+
         },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "1d" })
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 2 * 24 * 60 * 60 * 1000 })
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 2 * 24 * 60 * 60 * 1000, sameSite:"none" })
         let userObj = user.rows[0]
+        let {name, email, userid} = user.rows[0]
         userObj.password = undefined
-        res.json({ name: userObj.name, accessToken }).status(200)
+        res.json({userid, email, name, accessToken, }).status(200)
     }
     else {
         res.status(401).json({ error: `email or password not valid` })
-        // res.json({ error: "email or password not valid" }).status(401);
         throw new Error("email or password is not valid");
     }
 
@@ -154,15 +157,15 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
     const cookies = req.cookies
+    console.log(cookies)
     if (!cookies?.jwt) {
-        res.sendStatus(401);
+        res.status(401).json({error:"no cookies available"});
         throw new Error("no cookies available")
     }
-    // console.log(cookies) 
     const refreshToken = cookies.jwt
 
-    res.clearCookie('jwt', { httpOnly: true, secure: true })
-    res.json({ message: "Logged out successfully" })
+    res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite:"none" })
+    res.json({ message: "Logged out successfully" }).status(200)
 })
 
 

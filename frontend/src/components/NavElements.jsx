@@ -3,18 +3,19 @@ import { NavLink, Link } from 'react-router-dom'
 import { RxAvatar } from "react-icons/rx"
 import {AiOutlineHome, AiOutlineInfoCircle, AiOutlineClose} from "react-icons/ai"
 import {FaShuttleVan} from "react-icons/fa"
+import useLogout from '../hooks/useLogout'
 
 function NavElements({ mobile }) {
 
     const mobileStyles = mobile ? ' text-lg my-2 text-center' : ''
-
+    const logout = useLogout()
     const activeStyles = {
         fontWeight: "bold",
         textDecoration: "underline",
         color: "#161616"
     }
     function fakeLogOut() {
-        localStorage.removeItem("loggedin")
+        logout()
     }
     
     return (

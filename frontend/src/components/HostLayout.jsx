@@ -7,7 +7,7 @@ export default function HostLayout() {
         textDecoration: "underline",
         color: "#161616"
     }
-
+ 
     return (
         <>
             <nav className="host-nav mt-5">

@@ -486,9 +486,15 @@ i[class*='van-type-'] {
 }
 
 .host-nav {
+
     display: flex;
     margin-bottom: 30px;
-    overflow-x: scroll;
+}
+
+@media only screen and (max-width:450px) {
+    .host-nav{
+        overflow-x: scroll;
+    }
 }
 
 .host-nav a {
