@@ -1,6 +1,5 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import useAuth from "../hooks/useAuth"
 // images 
 import HomeCamp1 from "../assets/images/home-camp-1.jpg"
 import HomeCamp1Mobile from "../assets/images/mobile/home-camp-1-mobile.jpg"
@@ -8,8 +7,6 @@ import HomeCamp2 from "../assets/images/home-camp-2.jpg"
 import HomeCamp2Mobile from "../assets/images/mobile/home-camp-2-mobile.jpg"
 
 export default function Home() {
-    const {auth} = useAuth()
-    console.log(auth)
     return (
         <main className="w-full mb-5 flex flex-col items-center">
             <div className="home-container-div min-h-[40vh]  w-full bg-cover relative shadow-md flex flex-col justify-center" >

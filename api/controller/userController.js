@@ -141,7 +141,7 @@ const loginUser = asyncHandler(async (req, res) => {
         },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "1d" })
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 2 * 24 * 60 * 60 * 1000, sameSite:"none" })
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 2 * 24 * 60 * 60 * 1000, sameSite:"none", secure:true })
         let userObj = user.rows[0]
         let {name, email, userid} = user.rows[0]
         userObj.password = undefined

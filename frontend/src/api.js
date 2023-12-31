@@ -55,26 +55,37 @@ export async function getVans(id) {
 //     const data = await res.json()
 //     return data.vans
 // }
-export async function getHostVans(id, token) {
-    const url = `/api/getVans/`
-    const res = await fetch(`${BaseUrl}${url}`,{
-        method:'GET',
-        headers:{
-            'Content-Type':'application/json',
-            'Authorization':`Bearer ${token}`
-        },
-        
-        credentials:'include'
+export async function getHostVans(userId, token, vanid) {
+    const url = `/api/getHostVans/`
+    const body = vanid ? {userId, vanid}:{userId}
+    const response = await axios.post(`${BASEURL}${url}`,body, {
+        headers: { "Content-Type": "application/json", 'Authorization':`Bearer ${token}` },
+        withCredentials:true
     })
-    if (!res.ok) {
-        throw {
-            message: "Failed to fetch vans",
-            statusText: res.statusText,
-            status: res.status
-        }
-    }
-    const data = await res.json()
-    return data.vans
+    // const res = await fetch(`${BaseUrl}${url}`,{
+    //     method:'POST',
+    //     headers:{
+    //         'Content-Type':'application/json',
+    //         'Authorization':`Bearer ${token}`,
+    //         'Access-Control-Allow-Credentials':"true"
+    //     },
+    //     body:{
+    //         userId:userid
+    //     },
+    //     credentials:'include'
+    // }
+    // )
+    // if (!response.ok) {
+    //     throw {
+    //         message: "Failed to fetch vans",
+    //         statusText: res.statusText,
+    //         status: res.status
+    //     }
+    // }
+    // const data = await res.json()
+    // return data.vans
+    console.log(response.data)
+    return response
 }
 
 

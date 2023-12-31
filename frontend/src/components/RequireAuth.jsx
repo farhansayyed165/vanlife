@@ -7,7 +7,7 @@ import { checkToken, refreshToken } from '../api'
 function RequireAuth() {
   const { auth, setAuth } = useAuth()
   return (
-    auth.userid ? <Outlet /> : <Navigate to="/login" state={{ from: location, message: "You must login first" }} replace />
+    auth.userid ? <Outlet context={auth} /> : <Navigate to="/login" state={{ from: location, message: "You must login first" }} replace />
     )
 }
 

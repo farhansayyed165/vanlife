@@ -1,50 +1,53 @@
 import React from "react"
-import { Link, useLoaderData, defer, Await } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link, useLoaderData, } from "react-router-dom"
 import { getHostVans } from "../../api"
-import { requireAuth } from "../../utils"
+import useGetHostVans from "../../hooks/useGetHostVans"
 
 export async function loader({ request }) {
     // await requireAuth(request)
-    return defer({ vans: getHostVans() })
+    // return defer({ vans: getHostVans() })
+    return " "
 }
 
 export default function HostVans() {
-    const dataPromise = useLoaderData()
+    const [data, setData] = useState([])
+    const fetchData = useGetHostVans(setData)
+    useEffect(() => {
+        let isMounted = true
+        fetchData()
+        return () => {
+            isMounted = false
+        }
+    }, [])
 
-    function renderVanElements(vans) {
-        const hostVansEls = vans.map(van => (
-            <Link
-                to={van.id}
-                key={van.id}
-                className="host-van-link-wrapper"
-            >
-                <div className="host-van-single" key={van.id}>
-                    <img src={van.imageUrl} alt={`Photo of ${van.name}`} />
-                    <div className="host-van-info">
-                        <h3>{van.name}</h3>
-                        <p>${van.price}/day</p>
-                    </div>
+
+    const hostVansEls = data.map(van => (
+        <Link
+            to={van.vanid}
+            key={van.vanid}
+            className="host-van-link-wrapper"
+        >
+            <div className="host-van-single" key={van.vanid}>
+                <img src={van.image} alt={`Photo of ${van.name}`} />
+                <div className="host-van-info">
+                    <h3>{van.name}</h3>
+                    <p>${van.price}/day</p>
                 </div>
-            </Link>
-        ))
-        return (
-            <div className="host-vans-list">
-                <section>
-                    {hostVansEls}
-                </section>
             </div>
-        )
-    }
+        </Link>
+    ))
+
 
 
     return (
         <section>
             <h1 className="host-vans-title">Your listed vans</h1>
-            <React.Suspense fallback={<h2>Loading vans...</h2>}>
-                <Await resolve={dataPromise.vans}>
-                    {renderVanElements}
-                </Await>
-            </React.Suspense>
+            <div className="host-vans-list">
+                <section>
+                    {data && hostVansEls}
+                </section>
+            </div>
         </section>
     )
 }

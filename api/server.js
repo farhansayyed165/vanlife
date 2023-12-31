@@ -12,6 +12,8 @@ const {getImageUrl} = require("./config/awsConfig")
 
 const cors = require("cors");
 
+// app.set('Access-Control-Expose-Headers', 'field')
+
 app.use(cookieParser())
 
 app.use(express.json())
@@ -41,9 +43,9 @@ app.get("/file",upload.single("image"), async (req, res)=>{
 
 app.use("/api/", require("./routes/vansRoute"))
 
-app.get("/checkToken", validateToken, ()=>{
-    const user = req.user
-    console.log(user)
+app.get("/checkToken", validateToken, (req,res)=>{
+    // const user = req.user
+    // console.log(user)
     res.status(200).json(true)
 })
 

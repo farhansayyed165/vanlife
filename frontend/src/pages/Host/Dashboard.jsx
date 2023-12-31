@@ -1,51 +1,52 @@
-import React, {useEffect, useState} from "react"
-import { Link, defer, Await, useLoaderData } from "react-router-dom"
-import { getHostVans } from "../../api"
-import { requireAuth } from "../../utils"
+import React, { useEffect, useState } from "react"
+import { Link, defer, Await, useLoaderData, useOutlet, useNavigate } from "react-router-dom"
+import useGetHostVans from "../../hooks/useGetHostVans"
 import { BsStarFill } from "react-icons/bs"
-import useRefreshToken from "../../hooks/useRefreshToken"
-import useAxiosPrivate from "../../hooks/useAxiosPrivate"
-import useAuth from "../../hooks/useAuth"
 // export async function getAndRefresh(){
 //     try {
 //         const res = await getHostVans()
 //         return res.json()
 //     } catch (error) {
-        
+
 //     }
 // }
 
-export async function loader({ request }) {
+export async function loader(obj) {
+    // console.log(obj)
     // const res  = getHostVans()
     // return defer({vans:res})
     return "yes"
 }
 
 export default function Dashboard() {
-    const [data, setData] = useState()
-    const { auth } = useAuth()
-    const loaderData = useLoaderData()
+    const [data, setData] = useState([])
+    const fetchData = useGetHostVans(setData)
+    
+    useState(()=>{
+        let isMounted = true
+        isMounted && fetchData()
+        return()=>{
+            isMounted = false
+        }
+    })
 
-    // const refresh = useRefreshToken()
-    function renderVanElements(vans) {
-        const hostVansEls = vans.map((van) => (
-            <Link to={`vans/${van.id}`}>
-                <div className="host-van-single" key={van.id}>
-                    <img src={van.imageUrl} alt={`Photo of ${van.name}`} />
+    const hostVansEls = data.map((van) => {
+        console.log("van", van)
+        return (
+            <Link to={`vans/${van.vanid}`} key={van.vanid}>
+                <div className="host-van-single" >
+                    <img src={van.image} alt={`Photo of ${van.name}`} />
                     <div className="host-van-info">
                         <h3>{van.name}</h3>
-                        <p>${van.price}/day</p>
+                        <p>${van.price}$/day</p>
                     </div>
                 </div>
             </Link>
-        ))
-
-        return (
-            <div className="host-vans-list">
-                <section>{hostVansEls}</section>
-            </div>
         )
-    }
+    })
+
+
+
 
     return (
         <>
@@ -70,9 +71,12 @@ export default function Dashboard() {
                     <h2>Your listed vans</h2>
                     <Link to="vans">View all</Link>
                 </div>
-                <React.Suspense fallback={<h3>Loading...</h3>}>
-                    {/* <Await resolve={loaderData.vans}>{renderVanElements}</Await> */}
-                </React.Suspense>
+
+                    <div className="host-vans-list">
+                        <section>{data ? hostVansEls:<p>Loading...</p>}</section>
+                    </div>
+
+
             </section>
         </>
     )

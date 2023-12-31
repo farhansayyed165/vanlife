@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {getAllVans, getQueryVans} = require("../controller/vansController")
 
-router.post("/allVans", getAllVans);
+router.post("/getHostVans", getAllVans);
 
 router.get("/vans", getQueryVans)
 

@@ -3,18 +3,33 @@ import useAuth from './useAuth'
 import axios from 'axios'
 import { BaseUrl } from '../constants';
 
+
 function useRefreshToken() {
-    const {setAuth} = useAuth();
+    const {auth,setAuth} = useAuth();
     async function refresh(){
-        const response = await axios.get(`${BaseUrl}/api/refresh`, {
+      try{
+        const check = await axios.get(`${BaseUrl}/checkToken`,{
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${auth.accessToken}`},
           withCredentials:true
         })
-        // setAuth(prev=>{
-        //   console.log(prev)
-        //   console.log(response.accessToken)
-        //   return {...prev, accessToken:response.accessToken}
-        // })
-        return response.accessToken
+      }
+      catch(err){
+        try {
+          const response = await axios.get(`${BaseUrl}/api/refresh`, {
+            withCredentials:true
+          })
+          
+          setAuth(prev=>{
+            // console.log(prev)
+            console.log(response.data.accessToken)
+            return {...prev, accessToken:response.data.accessToken}
+          })
+          console.log(auth)
+        } catch (error) {
+          // if(error.response.statusCode == 401)
+          setAuth({})
+        }
+      }
     }
   return refresh
 }

@@ -9,6 +9,7 @@ function Signup() {
   const [data, setData] = useState({})
   const [avatar, setAvatar] = useState()
   const [error, setError] = useState() 
+  const [buttonState, setButtonState] = useState(0)
   const navigate = useNavigate()
   function handleChange(e) {
     const { name, value } = e.target;
@@ -19,6 +20,10 @@ function Signup() {
   }
   async function handleSubmit(e) {
     e.preventDefault()
+    setButtonState(0)
+    setTimeout(()=>{
+
+    },3000)
     if(!avatar){
       setAvatar("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png")
     }
@@ -29,13 +34,19 @@ function Signup() {
     form.append("password", data.password)
     form.append("about", data.about)
     form.append("gender", data.gender)
-
-    const response = await createUser(form)
-    if(response.error){
-      setError(response.message)
-      return
+    try{
+      const response = await createUser(form)
+      if(response.error){
+        // setButtonState(1)
+        setError(response.message)
+        return
+      }
+      // setButtonState(1)
+      navigate("/login", {state:{message:"Login with your email and password"}})
     }
-    navigate("/login", {state:{message:"Login with your email and password"}})
+    catch(err){
+
+    }
   }
   return (
     <>
@@ -99,7 +110,7 @@ function Signup() {
               <option value="prefer not to answer">Perfer not to Answer</option>
             </select>
           </div>
-          <button type="submit" className='p-2 bg-button-orange rounded signup-element text-white font-semibold text-lg'>Submit</button>
+          <button type="submit" disabled={buttonState} className='p-2 bg-button-orange rounded signup-element text-white font-semibold text-lg'>{buttonState ? "Submit" : "Submitting..." }</button>
         </form>
       </main>
     </>

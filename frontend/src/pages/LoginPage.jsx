@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { json, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { loginUser } from '../api'
 // import { AuthContext } from '../context/AuthProvider'
 import useAuth from '../hooks/useAuth';
@@ -48,12 +48,12 @@ function Login() {
 
     }
     return (
-        <div className="login-container">
-            <h1>Sign in to your account</h1>
-            {/* {message && <h3 className="text-green-800">{message}</h3>} */}
+        <div className="login-container mt-10 ">
+            <h1 class>Sign in to your account</h1>
+           
 
-            {location?.state?.message && <h3 className="text-green-800">{location?.state?.message}</h3>}
-            <h3 className="red" style={{fontWeight:"600"}}>{errorMessage}</h3>
+            {location?.state?.message && <h3 className="text-green-800 ">{location?.state?.message}</h3>}
+            <h3 className="red mb-2 mt-2" style={{fontWeight:"600"}}>{errorMessage}</h3>
 
             <form onSubmit={handleSubmit} className="login-form">
                 <input
@@ -75,6 +75,11 @@ function Login() {
                 >
                     {buttonState == "Submitting" ? "Submitting..." : (buttonState == "Error" ? "Try Again" : buttonState)}
                 </button>
+            <h3 className=' font-normal flex mx-2 mt-4 text-left '>
+                <span className='self-start mr-4'>Don't have an account ? </span>
+                
+                <Link to="/signup" className=' text-blue-600 hover:font-semibold transition-all duration-150 underline'>Singin</Link>
+            </h3>
             </form>
         </div>
     )

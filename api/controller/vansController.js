@@ -9,15 +9,16 @@ const getAllVans = asyncHandler(async (req, res)=>{
         throw new Error(error)
     }
     const client = await pool.connect()
-    const vans = await client.query("SELECT * FROM vans WHERE userid = $1", [userId])
+    const vans = await client.query("SELECT * FROM vans WHERE userid = $1 ORDER BY vanid ASC", [userId])
     if(vans.rowCount == 0){
         console.log("vans",vans.rows, vans.rowCount)
         const error = "No Hosted vans"
         client.release()
         res.json({error}).status(204)
     }
-    console.log(vans.rows)
-    res.json({vans:vans.rows}).json(200)
+    // console.log(vans.rows)
+    client.release()
+    res.json({vans:vans.rows}).status(200)
 });
 
 const getQueryVans = asyncHandler(async (req, res)=>{
