@@ -17,6 +17,16 @@ export async function checkToken(token){
     return res.json()
 }
 
+export async function getUser(column, value){
+    const url = `${BaseUrl}/api/getUser`
+    const body = {column, value}
+    const response = await axios.post(url,body, {
+        headers:{'Content-Type':'application/json'}
+    })
+    // console.log(response)
+    return response
+}
+
 export async function refreshToken(){
     const response = await fetch(`${BaseUrl}/api/refresh`, {
         method:"GET",
@@ -62,29 +72,7 @@ export async function getHostVans(userId, token, vanid) {
         headers: { "Content-Type": "application/json", 'Authorization':`Bearer ${token}` },
         withCredentials:true
     })
-    // const res = await fetch(`${BaseUrl}${url}`,{
-    //     method:'POST',
-    //     headers:{
-    //         'Content-Type':'application/json',
-    //         'Authorization':`Bearer ${token}`,
-    //         'Access-Control-Allow-Credentials':"true"
-    //     },
-    //     body:{
-    //         userId:userid
-    //     },
-    //     credentials:'include'
-    // }
-    // )
-    // if (!response.ok) {
-    //     throw {
-    //         message: "Failed to fetch vans",
-    //         statusText: res.statusText,
-    //         status: res.status
-    //     }
-    // }
-    // const data = await res.json()
-    // return data.vans
-    console.log(response.data)
+    // console.log(response.data)
     return response
 }
 

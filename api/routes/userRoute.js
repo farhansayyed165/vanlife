@@ -12,12 +12,8 @@ const {
     createUser,
     logoutUser} = require("../controller/userController")
 
-router.get("/getUser", getUser);
-
-router.get("/getVans", validateToken,(req,res)=>{
-    res.send("yes")
-});
-
+router.post("/getUser", getUser);
+    
 router.get("/logoutUser", logoutUser);
 
 router.put("/updateUser", validateToken, updateUser);  

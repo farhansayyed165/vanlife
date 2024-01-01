@@ -60,19 +60,33 @@ const createUser = asyncHandler(async (req, res) => {
 
 
 const getUser = asyncHandler(async (req, res) => {
-    const { column, value } = req.query
-    // console.log(req.params)
+    const { column, value } = req.body
+    
+    console.log("req",req.body)
     if (!column || !value) {
         res.status(400)
         throw new Error(`"value" or "column" parameter required for the request is empty`)
     }
-    str = `SELECT * FROM users WHERE ${column} ILIKE '${value}'`
-    pool.query(str, (error, result) => {
-        if (error) {
-            console.log(error)
-        }
-        res.json(result.rows).status(200)
-    })
+    if(column == 'name'){
+        str = `SELECT * FROM users WHERE $1 ILIKE '$2'`
+    }
+    else{
+        str = `SELECT * FROM users WHERE userid = $1`
+    }
+    console.log(str)
+    const client = await pool.connect()
+    const user = await client.query(str, [value])
+    client.release()
+    console.log(user)
+    res.json(user?.rows).status(200)
+
+    // pool.query(str, (error, result) => {
+    //     if (error) {
+    //         console.log(error)
+    //     }
+    //     // result.rows[0].password = undefined
+    //     console.log(result)
+    // })
 })
 
 

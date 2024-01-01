@@ -12,7 +12,7 @@ export async function loader({ request }) {
 
 export default function HostVans() {
     const [data, setData] = useState([])
-    const fetchData = useGetHostVans(setData)
+    const fetchData = useGetHostVans(setData, 0)
     useEffect(() => {
         let isMounted = true
         fetchData()
@@ -43,11 +43,13 @@ export default function HostVans() {
     return (
         <section>
             <h1 className="host-vans-title">Your listed vans</h1>
+            <React.Suspense fallback={<p>Loading...</p>}>
             <div className="host-vans-list">
                 <section>
-                    {data && hostVansEls}
+                    {hostVansEls}
                 </section>
             </div>
+            </React.Suspense>
         </section>
     )
 }

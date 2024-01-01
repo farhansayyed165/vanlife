@@ -24,7 +24,6 @@ function useRefreshToken() {
             console.log(response.data.accessToken)
             return {...prev, accessToken:response.data.accessToken}
           })
-          console.log(auth)
         } catch (error) {
           // if(error.response.statusCode == 401)
           setAuth({})
